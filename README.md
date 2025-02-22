@@ -3,7 +3,9 @@ This repository showcases the modifications I made to [Rotorpy](https://github.c
 
 
 Compatible with gymnasium = 1.0.0 <br>
-Automate the video <br>
+Automate the evaluation <br>
+Gif generation <br>
+animate now works for multiple agents <br>
 Tensorboard <br>
 Integrate IMU <br>
 Study results of wind conditions on uav tracking - change reward functions <br>
