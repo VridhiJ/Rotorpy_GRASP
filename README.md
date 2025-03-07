@@ -10,6 +10,7 @@ Changes to Training script and quarotor environment <br>
   2. Ground Truth Wind
   3. IMU
 - Made quadrotor environment compatible to handle different training and evaluation scenarios.
+  
 Automate the evaluation <br>
 - automated the periodic evaluation of model while training to see how our model reacts to different conditions without having to wait for training to complete.
 - left to user discretion on how frequent the evaluation should be. sped up the auto evaluation by reducing the time for tracking 10 agents
