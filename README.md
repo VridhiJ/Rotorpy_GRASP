@@ -12,13 +12,13 @@ Gif generation <br>
 - because the auto-evaluation only lasts for 2 seconds every few epochs to not slow down training too much if user wants to check the performance, can view the generated gif.
 
 animate now works for multiple agents <br>
-- we have 10 agents running parallely in our environment
+- we have 10 agents running parallelly in our environment.
 
 Tensorboard <br>
-- integrated tensorboard summarywriter for our wind study
+- integrated tensorboard summarywriter for our wind study.
 
 Integrate IMU <br>
-- for real time RL integrated IMU
+- for real time RL integrated IMU.
 
 Study results of wind conditions on uav tracking - change reward functions <br>
 - performance evaluations of integrating wind and imu during training.
