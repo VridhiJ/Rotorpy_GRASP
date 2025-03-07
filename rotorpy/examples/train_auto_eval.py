@@ -21,8 +21,14 @@ In this script, we demonstrate how to train a hovering control policy in RotorPy
 We use our custom quadrotor environment for Gymnasium along with stable baselines for the PPO implementation. 
 
 The task is for the quadrotor to stabilize to hover at the origin when starting at a random position nearby. 
+We can train the agents under different scenarios. i.e. 
+1. No wind
+2. Ground Truth wind
+3. With IMU integration
 
 Training can be tracked using tensorboard, e.g. tensorboard --logdir=<log_dir>
+
+Here we check the progress of our training with periodic evaluations. Left on user discretion.
 
 """
 
@@ -54,27 +60,65 @@ def random_wind():
         sig_wind=np.random.uniform([25,25,0], [75,75,30]),  # Vary intensity
         altitude=np.random.uniform(1.0, 2.0),
     )
+# Define training scenarios.
+training_scenarios = {
+    "No wind": {
+        "wind_profile": None,
+        "selected_scenario": 0
+
+    },
+    "DrydenGust": {
+        "wind_profile": random_wind(),
+        "selected_scenario": 1
+    },
+    "IMU" : {
+        "wind_profile": DrydenGust(dt= 1/100, sig_wind=([75, 75, 30]), altitude= 2.0,),
+        "selected_scenario": 2
+    }
+}
 
 # Make the environment. For this demo we'll train a policy to command collective thrust and body rates.
 # Turning render_mode="None" will make the training run much faster, as visualization is a current bottleneck.
-env = gym.make("Quadrotor-v0",
-                control_mode ='cmd_motor_speeds',
-                reward_fn = reward_function,
-                quad_params = quad_params,
-                max_time = 5,
-                wind_profile = random_wind(),
-                world = None,
-                sim_rate = 100,
-                render_mode='None')
-
+env_config = {
+    "id": "Quadrotor-v0",
+    "control_mode": "cmd_motor_speeds",
+    "reward_fn": lambda obs, act: hover_reward(obs, act, weights={'x': 1, 'v': 0.1, 'w': 0, 'u': 1e-5}),
+    "quad_params": quad_params,
+    "max_time": 5,
+    "world": None,
+    "sim_rate": 100,
+    "render_mode": "None"
+}
 # from stable_baselines3.common.env_checker import check_env
 # check_env(env, warn=True)  # you can check the environment using built-in tools
+
+# Select a scenario
+scenario_names = list(training_scenarios.keys())
+for i, name in enumerate(scenario_names):
+    print(f"{i}: {name}")
+    
+selected_id = int(input("Select scenario: "))
+selected_scenario = training_scenarios[scenario_names[selected_id]]
+
+# Merge selected scenario parameters into env_config
+env_config.update(selected_scenario)
+
+# Make the environment. 
+env = gym.make(**env_config)
 
 # Reset the environment
 observation, info = env.reset(options={'initial_state': 'random','pos_bound': 2, 'vel_bound': 0})
 
 # Create a new model
 model = PPO(MlpPolicy, env, verbose=1, ent_coef=0.01, tensorboard_log=log_dir)
+
+# Ask the user if they want to run evaluation periodically to see progress
+auto_eval = input("Would you like to get training progress updates? (Y/N): ").strip().lower() == "y"
+
+# If yes, ask user how frequently would they like to run the evaluation script
+if auto_eval:
+    eval_freq = int(input("How frequently would you like to run the evaluation? Enter a number: ").strip())
+    
 
 # Training...
 num_timesteps = 20_000
@@ -92,9 +136,9 @@ while True:  # Run indefinitely..
     model_path = f"{models_dir}/PPO/{start_time.strftime('%H-%M-%S')}/hover_{num_timesteps*(epoch_count+1)}"
     model.save(model_path)
 
-    # runs evaluation script every 5 epochs
-    if epoch_count%5 == 0: 
-        evaluate_model(model_path)
+    # runs evaluation script periodically
+    if auto_eval and epoch_count%(eval_freq) == 0: 
+        evaluate_model(model_path, num_timesteps = num_timesteps*(epoch_count+1), selected_scenario = selected_scenario)
 
     epoch_count += 1   
 
