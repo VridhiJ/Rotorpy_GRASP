@@ -1,7 +1,7 @@
 # Wind Aware UAV 
 This repository highlights he modifications made to [Rotorpy](https://github.com/spencerfolk/rotorpy) as part of my research at GRASP Lab. All files included originate from the original Rotorpy repository, but this is not the complete Rotorpy framework. This repository is intended to highlight the specific changes implemented.
 
-Key Modifications <br>
+*Key Modifications* <br>
 
 Compatibility <br> 
 - Now compatible with Gymnasium: Version 1.0.0 
