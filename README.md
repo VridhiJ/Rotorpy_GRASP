@@ -32,3 +32,9 @@ IMU Integration & Reward Function Adjustments <br>
 - Integrated IMU for real-time reinforcement learning.
 - Studied the impact of wind conditions on UAV tracking.
 - Adjusted reward functions to improve performance when incorporating wind and IMU data.
+
+
+
+https://github.com/user-attachments/assets/f66e62de-2a94-4db2-9cc7-777d06145685
+
+
